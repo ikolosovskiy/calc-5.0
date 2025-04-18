@@ -2,7 +2,8 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>Калькулятор субсидії на оренду житла для ВПО</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Орієнтовний калькулятор субсидії на оренду житла для ВПО</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -14,6 +15,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      flex-direction: column;
     }
     .calculator {
       background: #fff;
@@ -22,6 +24,14 @@
       max-width: 500px;
       width: 100%;
       padding: 30px;
+      margin: 0 auto;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      max-height: 60px; /* Adjust as needed */
     }
     .calculator h2 {
       text-align: center;
@@ -96,7 +106,6 @@
       color: #fff;
       margin-top: 10px;
     }
-    /* Стилізація для tooltip */
     .tooltip {
       position: relative;
       display: inline-block;
@@ -124,240 +133,348 @@
       padding: 15px;
       position: absolute;
       z-index: 1;
-      left: -260px;
+      left: -260px; /* Adjusted to prevent overflow on smaller screens if needed */
       top: 50%;
       transform: translateY(-50%);
       opacity: 0;
       transition: opacity 0.3s;
       font-size: 12px;
       line-height: 1.5;
+      white-space: pre-line;
     }
     .tooltip .tooltiptext::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 100%;
-      transform: translateY(-50%);
-      border-width: 5px;
-      border-style: solid;
-      border-color: transparent #5563DE transparent transparent;
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 100%; /* Position arrow to the right */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent transparent #5563DE; /* Point left */
     }
     .tooltip:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
     }
+    .tooltiptext ul {
+        padding-left: 20px;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    .tooltiptext li {
+        margin-bottom: 3px;
+    }
+    .bottom-disclaimer {
+      max-width: 500px;
+      margin: 20px auto 10px auto;
+      font-size: 12px;
+      color: #444;
+      text-align: center;
+      line-height: 1.4;
+    }
+    @media (max-width: 600px) {
+        .calculator {
+            padding: 20px;
+        }
+        .tooltip .tooltiptext {
+           left: 50%;
+           transform: translate(-50%, -110%);
+           width: 80%;
+        }
+         .tooltip .tooltiptext::after {
+            left: 50%;
+            top: 100%;
+            margin-left: -5px;
+            margin-top: 0;
+            border-color: #5563DE transparent transparent transparent;
+         }
+    }
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <h2>Орієнтовний калькулятор субсидії на оренду житла для ВПО* </h2>
-    <h7>*Остаточний розрахунок можна отримати при зверненні до Пенсійного Фонду України.</h7>
-    
-    <label for="income">
-      Середньомісячний дохід домогосподарства (грн):
-      <span class="tooltip">
-        <span class="info-icon">?</span>
-        <span class="tooltiptext">
-          Середньомісячний сукупний дохід домогосподарства включає всі види доходів, отриманих його членами, зокрема:<br>
-          • заробітну плату;<br>
-          • пенсії;<br>
-          • стипендії;<br>
-          • соціальні виплати;<br>
-          • доходи від підприємницької діяльності;<br>
-          • інші грошові надходження.<br><br>
-          (відповідно до п. 13 ПКМУ 1225)
-        </span>
-      </span>
-    </label>
-    <input type="number" id="income" placeholder="Введіть дохід">
-    
-    <label for="familyMembers">
-      Кількість членів домогосподарства:
-      <span class="tooltip">
-        <span class="info-icon">?</span>
-        <span class="tooltiptext">
-          Домогосподарство — це одна людина чи група осіб, які разом проживають в одному житлі, ведуть спільне господарство та користуються спільним бюджетом.<br><br>
-          (визначається відповідно до п.4. ПКМУ 1225)
-        </span>
-      </span>
-    </label>
-    <input type="number" id="familyMembers" placeholder="Введіть кількість членів домогосподарства">
-    
-    <label for="settlementType">Оберіть тип населеного пункту:</label>
-    <select id="settlementType" onchange="updateRegionOptions()">
-      <option value="">Оберіть тип</option>
-      <option value="city">Обласний центр або місто з населенням понад 1 млн</option>
-      <option value="smallTown">Міста та села області з населенням менше 1 млн</option>
-    </select>
-    
-    <label for="region">Оберіть область:</label>
-    <select id="region" onchange="updateCoefficient()">
-      <option value="">Оберіть область</option>
-    </select>
-    
-    <label for="regionalCoefficient">
-      Коригувальний коефіцієнт:
-      <span class="tooltip">
-        <span class="info-icon">?</span>
-        <span class="tooltiptext">
-          Коригувальні коефіцієнти для розрахунку вартості оплати найму (оренди) 1 кв. метра житлового приміщення (будинку, квартири) визначаються Додатком 3 до Порядку реалізації експериментального проекту щодо надання субсидії на оплату вартості або частини вартості найму (оренди) житлового приміщення та компенсації частини податку на доходи фізичних осіб або єдиного податку та військового збору.
-        </span>
-      </span>
-    </label>
-    <input type="text" id="regionalCoefficient" readonly>
-    
-    <label for="actualRent">
-      Вартість оренди житла (грн):
-      <span class="tooltip">
-        <span class="info-icon">?</span>
-        <span class="tooltiptext">
-          Вартість оренди житла зазначається в договорі найму.<br><br>
-          Комунальні витрати можуть бути частково або повністю компенсовані коштом субсидії на оплату житлово-комунальних послуг.
-        </span>
-      </span>
-    </label>
-    <input type="number" id="actualRent" placeholder="Введіть суму оренди">
-    
-    <button onclick="calculateSubsidy()">Розрахувати субсидію</button>
-    
-    <div class="result" id="result"></div>
+
+<div class="calculator">
+  <div class="logo-container">
+    <img src="logo.png" alt="Logo">
   </div>
-  
-  <script>
-    const regionCoefficients = {
-      city: {
-        'Вінницька': 1.08,
-        'Волинська': 1.09,
-        'Дніпропетровська': 1.16,
-        'Донецька': 0.56,
-        'Житомирська': 1.12,
-        'Закарпатська': 2.40,
-        'Запорізька': 0.64,
-        'Івано-Франківська': 1.12,
-        /* 'Київська': 1.00, */
-        'Кіровоградська': 0.91,
-        'Луганська': 0.56,
-        'Львівська': 2.24,
-        'Миколаївська': 0.66,
-        'Одеська': 0.89,
-        'Полтавська': 1.12,
-        'Рівненська': 1.20,
-        'Сумська': 0.56,
-        'Тернопільська': 0.99,
-        'Харківська': 0.69,
-        'Херсонська': 0.56,
-        'Хмельницька': 1.41,
-        'Черкаська': 1.32,
-        'Чернівецька': 1.35,
-        'Чернігівська': 0.71,
-        'м. Київ': 1.22
-      },
-      smallTown: {
-        'Вінницька': 0.97,
-        'Волинська': 0.98,
-        'Дніпропетровська': 0.75,
-        'Донецька': 0.55,
-        'Житомирська': 0.51,
-        'Закарпатська': 2.34,
-        'Запорізька': 0.53,
-        'Івано-Франківська': 1.00,
-        'Київська': 0.79,
-        'Кіровоградська': 0.57,
-        'Луганська': 0.55,
-        'Львівська': 1.70,
-        'Миколаївська': 0.61,
-        'Одеська': 0.59,
-        'Полтавська': 0.53,
-        'Рівненська': 0.69,
-        'Сумська': 0.46,
-        'Тернопільська': 1.03,
-        'Харківська': 0.66,
-        'Херсонська': 0.55,
-        'Хмельницька': 1.42,
-        'Черкаська': 0.83,
-        'Чернівецька': 1.17,
-        'Чернігівська': 0.44
-      }
-    };
 
-    function updateRegionOptions() {
-      const settlementType = document.getElementById('settlementType').value;
-      const regionSelect = document.getElementById('region');
-      regionSelect.innerHTML = '<option value="">Оберіть область</option>';
-      
-      if (settlementType) {
-        const regions = Object.keys(regionCoefficients[settlementType]);
-        regions.forEach(region => {
-          if (settlementType === "city" && region === "Київська") return;
-          const option = document.createElement('option');
-          option.value = region;
-          option.textContent = region;
-          regionSelect.appendChild(option);
-        });
-      }
-      
-      document.getElementById('regionalCoefficient').value = '';
+  <h2>Орієнтовний калькулятор субсидії на оренду житла для ВПО*</h2>
+  <h7>*Остаточний розрахунок можна отримати при зверненні до Пенсійного фонду України. Даний орієнтовний калькулятор не гарантує отримання субсидії.</h7>
+
+   <label for="income">
+    Середньомісячний дохід домогосподарства (грн):
+    <span class="tooltip">
+      <span class="info-icon">?</span>
+      <span class="tooltiptext">
+       Середньомісячний сукупний дохід домогосподарства включає всі види доходів, отриманих його членами, зокрема:
+• заробітну плату;
+• пенсії;
+• стипендії;
+• соціальні виплати;
+• доходи від підприємницької діяльності;
+• інші грошові надходження.
+(відповідно до п. 13 ПКМУ 1225)
+      </span>
+    </span>
+  </label>
+   <input type="number" id="income" placeholder="Введіть дохід" min="1" oninput="hideResult()" onblur="checkIncome()">
+
+   <label for="familyMembers">
+    Кількість членів домогосподарства:
+    <span class="tooltip">
+      <span class="info-icon">?</span>
+      <span class="tooltiptext">
+        Домогосподарство — це одна людина чи група осіб, які разом проживають в одному житлі, ведуть спільне господарство та користуються спільним бюджетом.
+
+(визначається відповідно до п.4. ПКМУ 1225)
+      </span>
+    </span>
+  </label>
+   <input type="number" id="familyMembers" placeholder="Введіть кількість осіб" min="1" oninput="hideResult()">
+
+   <label for="settlementType">Оберіть тип населеного пункту:</label>
+   <select id="settlementType" onchange="updateRegionOptions()">
+     <option value="">Оберіть тип</option>
+     <option value="city">Обласний центр або місто з населенням понад 1 млн</option>
+     <option value="smallTown">Міста та села області з населенням менше 1 млн</option>
+   </select>
+
+   <label for="region">Оберіть область:</label>
+   <select id="region" onchange="updateCoefficient()" disabled>
+     <option value="">Оберіть область</option>
+   </select>
+
+   <label for="regionalCoefficient">
+    Коригувальний коефіцієнт:
+    <span class="tooltip">
+      <span class="info-icon">?</span>
+      <span class="tooltiptext">
+        Коригувальні коефіцієнти для розрахунку вартості оплати найму (оренди) 1 кв. метра житлового приміщення (будинку, квартири) визначаються Додатком 3 до Порядку реалізації експериментального проекту щодо надання субсидії на оплату вартості або частини вартості найму (оренди) житлового приміщення та компенсації частини податку на доходи фізичних осіб або єдиного податку та військового збору.
+      </span>
+    </span>
+  </label>
+   <input type="text" id="regionalCoefficient" readonly>
+
+   <label for="rentedArea">
+    Загальна площа орендованого житла (м²):
+    <span class="tooltip">
+      <span class="info-icon">?</span>
+      <span class="tooltiptext">
+        Введіть фактичну площу орендованого житла.
+      </span>
+    </span>
+   </label>
+   <input type="number" id="rentedArea" placeholder="Введіть площу" min="1" oninput="hideResult()">
+
+   <label for="actualRent">
+    Вартість оренди житла (грн):
+    <span class="tooltip">
+      <span class="info-icon">?</span>
+      <span class="tooltiptext">
+        Вартість оренди житла зазначається в договорі найму.
+
+Комунальні витрати можуть бути частково або повністю компенсовані коштом субсидії на оплату житлово-комунальних послуг.
+      </span>
+    </span>
+   </label>
+   <input type="number" id="actualRent" placeholder="Введіть суму оренди" min="1" oninput="hideResult()">
+
+
+  <button onclick="calculateSubsidy()">Розрахувати субсидію</button>
+
+  <div class="result" id="result" style="display: none;"></div>
+</div>
+
+
+<div class="bottom-disclaimer">
+  <p>Цей орієнтовний калькулятор підготовано за підтримки Агентства ООН у справах біженців в Україні (УВКБ ООН). Зміст орієнтовного калькулятора виключно є відповідальністю Благодійної організації «Благодійний фонд “Стабілізейшен Суппорт Сервісез”» і жодним чином не відображає поглядів УВКБ ООН.</p>
+</div>
+
+<script>
+  const regionCoefficients = {
+    city: {
+        'Вінницька': 1.08, 'Волинська': 1.09, 'Дніпропетровська': 1.16, 'Донецька': 0.56,
+        'Житомирська': 1.12, 'Закарпатська': 2.40, 'Запорізька': 0.64, 'Івано-Франківська': 1.12,
+        'Кіровоградська': 0.91, 'Луганська': 0.56, 'Львівська': 2.24, 'Миколаївська': 0.66,
+        'Одеська': 0.89, 'Полтавська': 1.12, 'Рівненська': 1.20, 'Сумська': 0.56,
+        'Тернопільська': 0.99, 'Харківська': 0.69, 'Херсонська': 0.56, 'Хмельницька': 1.41,
+        'Черкаська': 1.32, 'Чернівецька': 1.35, 'Чернігівська': 0.71, 'м. Київ': 1.22
+    },
+    smallTown: {
+        'Вінницька': 0.97, 'Волинська': 0.98, 'Дніпропетровська': 0.75, 'Донецька': 0.55,
+        'Житомирська': 0.51, 'Закарпатська': 2.34, 'Запорізька': 0.53, 'Івано-Франківська': 1.00,
+        'Київська': 0.79, 'Кіровоградська': 0.57, 'Луганська': 0.55, 'Львівська': 1.70,
+        'Миколаївська': 0.61, 'Одеська': 0.59, 'Полтавська': 0.53, 'Рівненська': 0.69,
+        'Сумська': 0.46, 'Тернопільська': 1.03, 'Харківська': 0.66, 'Херсонська': 0.55,
+        'Хмельницька': 1.42, 'Черкаська': 0.83, 'Чернівецька': 1.17, 'Чернігівська': 0.44
+     }
+  };
+
+   function hideResult() {
+       document.getElementById('result').style.display = 'none';
+   }
+
+   function updateRegionOptions() {
+    const settlementType = document.getElementById('settlementType').value;
+    const regionSelect = document.getElementById('region');
+    regionSelect.innerHTML = '<option value="">Оберіть область</option>';
+    document.getElementById('regionalCoefficient').value = '';
+    hideResult();
+
+    if (settlementType) {
+      regionSelect.disabled = false;
+      const regionsData = regionCoefficients[settlementType];
+      const regions = Object.keys(regionsData);
+
+      const filteredRegions = regions.filter(region => {
+          if (settlementType === 'city') {
+              return region !== 'Київська';
+          } else if (settlementType === 'smallTown') {
+              return region !== 'м. Київ';
+          }
+          return true;
+      });
+
+      filteredRegions.sort((a, b) => a.localeCompare(b, 'uk'));
+
+      filteredRegions.forEach(region => {
+        const option = document.createElement('option');
+        option.value = region;
+        option.textContent = region;
+        regionSelect.appendChild(option);
+      });
+    } else {
+        regionSelect.disabled = true;
     }
+  }
 
-    function updateCoefficient() {
-      const settlementType = document.getElementById('settlementType').value;
-      const region = document.getElementById('region').value;
-      
-      if (settlementType && region) {
-        let coeff = regionCoefficients[settlementType][region];
-        // Для Закарпатської та Львівської областей обмежуємо коефіцієнт до 1.5
-        if (region === "Закарпатська" || region === "Львівська") {
-          coeff = Math.min(coeff, 1.5);
-        }
-        document.getElementById('regionalCoefficient').value = coeff;
-      } else {
+  function updateCoefficient() {
+    const settlementType = document.getElementById('settlementType').value;
+    const region = document.getElementById('region').value;
+    hideResult();
+
+    if (settlementType && region) {
+      let coeff = regionCoefficients[settlementType][region];
+      document.getElementById('regionalCoefficient').value = coeff.toFixed(2);
+    } else {
         document.getElementById('regionalCoefficient').value = '';
-      }
+    }
+  }
+
+  function checkIncome() {
+    const incomeField = document.getElementById('income');
+    const value = parseFloat(incomeField.value);
+    if (!isNaN(value) && value < 0) {
+      alert("Дохід не може бути від'ємним. Будь ласка, введіть коректне значення (0 або більше).");
+      incomeField.value = 0;
+    }
+     hideResult();
+  }
+
+
+  // --- Main subsidy calculation function (Final adjustments to output) ---
+  function calculateSubsidy() {
+    // --- Get Input Data ---
+    const incomeInput = document.getElementById('income');
+    const familyMembersInput = document.getElementById('familyMembers');
+    const regionalCoefficientInput = document.getElementById('regionalCoefficient');
+    const actualRentInput = document.getElementById('actualRent');
+    const rentedAreaInput = document.getElementById('rentedArea');
+    const resultDiv = document.getElementById('result');
+
+    resultDiv.innerHTML = '';
+    resultDiv.style.display = 'none';
+
+    // --- Validate Input Data ---
+    const income = parseFloat(incomeInput.value);
+    const familyMembers = parseInt(familyMembersInput.value);
+    const regionalCoefficient = parseFloat(regionalCoefficientInput.value);
+    const actualRent = parseFloat(actualRentInput.value);
+    const rentedArea = parseFloat(rentedAreaInput.value);
+
+    let errors = [];
+    if (isNaN(income) || income < 0) errors.push("коректний середньомісячний дохід (0 або більше)");
+    if (isNaN(familyMembers) || familyMembers <= 0) errors.push("коректну кількість членів домогосподарства (мінімум 1)");
+    if (isNaN(regionalCoefficient) || regionalCoefficient <= 0) errors.push("тип населеного пункту та область (для визначення коефіцієнта)");
+    if (isNaN(actualRent) || actualRent <= 0) errors.push("коректну вартість оренди (більше 0)");
+    if (isNaN(rentedArea) || rentedArea <= 0) errors.push("коректну загальну площу житла (більше 0)");
+
+    if (errors.length > 0) {
+      resultDiv.innerHTML = `<p style="color: #ffdddd;">Будь ласка, введіть: ${errors.join(', ')}.</p>`;
+      resultDiv.style.display = 'block';
+      return;
     }
 
-    function calculateSubsidy() {
-      const income = parseFloat(document.getElementById('income').value);
-      const familyMembers = parseInt(document.getElementById('familyMembers').value);
-      const regionalCoefficient = parseFloat(document.getElementById('regionalCoefficient').value);
-      const actualRent = parseFloat(document.getElementById('actualRent').value);
-      
-      if (
-        isNaN(income) || isNaN(familyMembers) || isNaN(regionalCoefficient) || isNaN(actualRent) ||
-        income <= 0 || familyMembers <= 0 || actualRent <= 0
-      ) {
-        document.getElementById('result').innerHTML = '<p>Будь ласка, введіть усі необхідні дані.</p>';
-        return;
-      }
-      
-      const costPerSqM = 193.6;
-      const socialNorm = Math.max(13.65 * familyMembers, 35.22);
-      const pm = 2920;
-      
-      // Гранична вартість оренди житла G = C_sqm * N_social * K_region
-      let G = costPerSqM * socialNorm * regionalCoefficient;
-      G = parseFloat(G.toFixed(2));
-      
-      const incomePerPerson = income / familyMembers;
-      // Обов’язковий відсоток платежу Rₒ = (incomePerPerson / (2*pm)) * 20
-      const R_o = (incomePerPerson / (2 * pm)) * 20;
-      const B = parseFloat((income * (R_o / 100)).toFixed(2));
-      
-      const theoreticalSubsidy = G - B;
-      
-      let resultHtml = '<div class="title">Результати розрахунку* </div>';
-      if (theoreticalSubsidy <= 0) {
-        resultHtml += '<p><strong>Орієнтовний розмір субсидії:</strong> не нараховується</p>';
-        resultHtml += '<p><strong>Гранична вартість оренди житла:</strong> ' + G.toFixed(2) + ' грн</p>';
-      } else {
-        const finalSubsidy = parseFloat(Math.min(theoreticalSubsidy, actualRent).toFixed(2));
-        resultHtml += '<p><strong>Орієнтовний розмір субсидії:</strong> ' + finalSubsidy.toFixed(2) + ' грн</p>';
-        resultHtml += '<p><strong>Гранична вартість оренди житла:</strong> ' + G.toFixed(2) + ' грн</p>';
-      }
-      
-      resultHtml += '<p class="disclaimer">*Даний розрахунок є орієнтовним і не гарантує отримання субсидії</p>';
-      
-      document.getElementById('result').innerHTML = resultHtml;
+    // --- Constants ---
+    const costPerSqM = 208;
+    const pm = 2920;
+    const minSocialArea = 35.22;
+    const socialAreaPerMember = 13.65;
+    const percentMultiplier = 20;
+    const maxPercent = 20;
+
+    // --- Calculations ---
+    // 1. Social Norm Area
+    let socialNormArea = (familyMembers === 1) ? minSocialArea : (socialAreaPerMember * familyMembers);
+    socialNormArea = Math.max(socialNormArea, minSocialArea);
+
+    // 2. Effective area for rent limit
+    const effectiveAreaForRentLimit = Math.min(socialNormArea, rentedArea);
+
+    // 3. Max Allowed Rent
+    let maxAllowedRent = effectiveAreaForRentLimit * costPerSqM * regionalCoefficient;
+    maxAllowedRent = parseFloat(maxAllowedRent.toFixed(2));
+
+    // 4. Obligatory Payment (B)
+    const incomePerMemberForPercent = income / familyMembers;
+    let percent_raw = (incomePerMemberForPercent / (2 * pm)) * percentMultiplier;
+    let percent_capped = Math.min(percent_raw, maxPercent);
+    let B = income * (percent_capped / 100);
+    B = parseFloat(B.toFixed(2));
+
+    // 5. Subsidy Base Rent
+    let subsidyBaseRent = Math.min(actualRent, maxAllowedRent);
+
+    // 6. Subsidy Calculation
+    let subsidy_calc = subsidyBaseRent - B;
+    let subsidy = Math.max(0, subsidy_calc);
+    subsidy = parseFloat(subsidy.toFixed(2));
+
+       // 7. Amount Family Pays (Виправлена логіка)
+    let familyPays = actualRent - subsidy;
+    // Переконуємося, що сума доплати не може бути від'ємною
+    // (це може статись, якщо субсидія > оренди, хоча за поточною логікою це малоймовірно)
+    familyPays = Math.max(0, familyPays);
+    // Переконуємося, що сума доплати не перевищує фактичну оренду
+    // (Цей рядок стає надлишковим при правильному розрахунку, але залишаємо для 100% гарантії)
+    familyPays = Math.min(familyPays, actualRent);
+    familyPays = parseFloat(familyPays.toFixed(2));
+
+    // --- Display Results (Adjusted Output) ---
+    let resultHtml = '<div class="title">Результати розрахунку*</div>';
+
+    // Subsidy amount - removed color styling
+    if (subsidy === 0) {
+         // Removed color style for 0.00
+         resultHtml += `<p><strong>Орієнтовний розмір субсидії:</strong> <strong>0.00 грн</strong></p>`;
+    } else {
+        // Removed color style for positive subsidy
+        resultHtml += `<p><strong>Орієнтовний розмір субсидії:</strong> <strong>${subsidy.toFixed(2)} грн</strong></p>`;
     }
-  </script>
+
+    resultHtml += `<p><strong>Сума, яку сплачує родина:</strong> ${familyPays.toFixed(2)} грн</p>`;
+
+    // Max allowed rent - removed the area text
+    resultHtml += `<p><strong>Гранична вартість оренди житла:</strong> ${maxAllowedRent.toFixed(2)} грн</p>`;
+
+    resultHtml += '<p class="disclaimer">*Цей розрахунок є орієнтовним і не гарантує отримання субсидії.</p>';
+
+    resultDiv.innerHTML = resultHtml;
+    resultDiv.style.display = 'block';
+  }
+  // --- End of calculateSubsidy function ---
+
+</script>
+
 </body>
 </html>
